@@ -1,0 +1,4 @@
+.block-container { padding-top: 1.5rem; padding-bottom: 4rem; }
+h1, h2, h3 { margin-top: 0.6rem; }
+.small { font-size: 0.9rem; color: #555; }
+.code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
