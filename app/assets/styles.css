@@ -1,4 +1,217 @@
-.block-container { padding-top: 1.5rem; padding-bottom: 4rem; }
-h1, h2, h3 { margin-top: 0.6rem; }
-.small { font-size: 0.9rem; color: #555; }
-.code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+/* ================================
+   Pension & 7% Regime Dashboard Style
+   Unified Blue Theme – Light & Dark Mode
+   ================================ */
+
+/* --- Font & Base --- */
+html, body, [class*="css"] {
+  font-family: "Lato", "Segoe UI", "Helvetica Neue", sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: inherit;
+}
+
+section.main {
+  padding: 2rem 3rem;
+}
+
+/* --- Titles & Headers --- */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  color: var(--text-color, #222);
+  margin-top: 1.2rem;
+  margin-bottom: 0.8rem;
+}
+
+h1 {
+  font-size: 1.9rem;
+  color: #006699;
+}
+
+h2 {
+  font-size: 1.4rem;
+  color: #0070C0;
+}
+
+h3 {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* --- Main Container --- */
+.block-container {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+/* --- Tabs --- */
+div.stTabs [role="tablist"] button {
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: #004d80;
+}
+div.stTabs [role="tablist"] button:hover {
+  background-color: rgba(0, 112, 192, 0.1);
+}
+div.stTabs [role="tablist"] button[data-baseweb="tab"]:not([aria-selected="true"]) {
+  background-color: transparent;
+}
+div.stTabs [role="tablist"] button[aria-selected="true"] {
+  background-color: #0070C0 !important;
+  color: white !important;
+}
+
+/* --- Tables --- */
+.dataframe {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dataframe th {
+  background-color: #f2f6f9;
+  color: #333;
+  font-weight: 600;
+}
+
+.dataframe td {
+  padding: 6px 10px !important;
+  border-color: #e0e0e0 !important;
+}
+
+/* --- Buttons --- */
+.stDownloadButton button {
+  background-color: #0070C0 !important;
+  color: white !important;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border: none;
+  transition: 0.2s ease;
+}
+.stDownloadButton button:hover {
+  background-color: #005b9a !important;
+}
+
+/* --- Notifications / Info Boxes --- */
+div[data-baseweb="notification"] {
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+/* --- Expander (Learn More) --- */
+.streamlit-expanderHeader {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #0070C0;
+}
+.streamlit-expanderContent {
+  background-color: rgba(0, 112, 192, 0.05);
+  padding: 1rem;
+  border-radius: 0 0 10px 10px;
+}
+
+/* --- Sidebar --- */
+[data-testid="stSidebar"] {
+  background: linear-gradient(180deg, #f5f9fc 0%, #eaf3fa 100%);
+  border-right: 1px solid #d3e0ea;
+  padding-top: 1rem !important;
+  padding-bottom: 2rem !important;
+}
+
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+  color: #004d80;
+}
+
+[data-testid="stSidebar"] .stNumberInput label,
+[data-testid="stSidebar"] .stCheckbox label {
+  font-weight: 500;
+  color: #003d66;
+}
+
+[data-testid="stSidebar"] .stNumberInput input {
+  border-radius: 8px !important;
+  border: 1px solid #aac8e0 !important;
+  background-color: #ffffff !important;
+  color: #002b45 !important;
+}
+
+[data-testid="stSidebar"] hr {
+  border: none;
+  border-top: 1px solid #c8d7e4;
+  margin: 1.2rem 0;
+}
+
+/* --- Sidebar tooltips --- */
+.stTooltip {
+  font-size: 0.85rem;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+}
+
+/* --- Charts --- */
+.js-plotly-plot .plotly .main-svg {
+  background: transparent !important;
+}
+
+.js-plotly-plot .plotly .cartesianlayer .scatterlayer .trace .lines {
+  stroke: #0070C0 !important;
+}
+.js-plotly-plot .plotly .cartesianlayer .xgrid,
+.js-plotly-plot .plotly .cartesianlayer .ygrid {
+  stroke: rgba(0, 112, 192, 0.1) !important;
+}
+
+/* --- Smooth Scroll --- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Dark Mode Support --- */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    color: #e0e0e0;
+    background-color: #1e1e1e;
+  }
+  h1, h2, h3, h4 {
+    color: #cce7ff;
+  }
+  .dataframe th {
+    background-color: #252525;
+    color: #ddd;
+  }
+  .dataframe td {
+    color: #ccc;
+  }
+  .stDownloadButton button {
+    background-color: #0090ff !important;
+  }
+  .streamlit-expanderContent {
+    background-color: rgba(0, 160, 255, 0.1);
+  }
+  [data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #1e1e1e 0%, #2a2a2a 100%);
+    border-right: 1px solid #333;
+  }
+  [data-testid="stSidebar"] .stNumberInput input {
+    background-color: #2c2c2c !important;
+    border: 1px solid #444 !important;
+    color: #f0f0f0 !important;
+  }
+  div.stTabs [role="tablist"] button[aria-selected="true"] {
+    background-color: #0090ff !important;
+    color: white !important;
+  }
+  .js-plotly-plot .plotly .cartesianlayer .scatterlayer .trace .lines {
+    stroke: #33adff !important;
+  }
+  .js-plotly-plot .plotly .cartesianlayer .xgrid,
+  .js-plotly-plot .plotly .cartesianlayer .ygrid {
+    stroke: rgba(0, 160, 255, 0.2) !important;
+  }
+}
