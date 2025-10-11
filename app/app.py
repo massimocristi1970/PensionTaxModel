@@ -21,7 +21,7 @@ if os.path.exists(css_path):
 else:
     st.warning("⚠️ styles.css not found in app/assets/. Using default Streamlit style.")
 
-st.title("Retirement & Investment Model — Italy 7% Regime → Post-10 Years")
+st.title("Retirement & Investment Model — Italy ")
 st.caption("Local model with editable assumptions and CSV export.")
 
 # ---- Theme: auto-detect + manual override ----
