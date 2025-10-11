@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px  # Modern charts
+import plotly.express as px
 from modules.tax import (
     italian_irpef_2025, calc_irpef_tax, add_region_muni_surcharge,
     tax_at_irpef_with_surcharges, gbp_to_eur
@@ -10,11 +10,30 @@ from modules.utils import combine_series_to_df, add_real_terms
 
 # ---- Page Setup ----
 st.set_page_config(page_title="Retirement & 7% Regime Model", layout="wide")
-with open("app/assets/styles.css", "r", encoding="utf-8") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+import os
+st.set_page_config(page_title="Retirement & 7% Regime Model", layout="wide")
+
+# ---- Load custom CSS safely regardless of where the app is launched ----
+css_path = os.path.join(os.path.dirname(__file__), "assets", "styles.css")
+if os.path.exists(css_path):
+    with open(css_path, "r", encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+else:
+    st.warning("⚠️ styles.css not found in app/assets/. Using default Streamlit style.")
 
 st.title("Retirement & Investment Model — Italy 7% Regime → Post-10 Years")
 st.caption("Local model with editable assumptions and CSV export.")
+
+# ---- Theme: auto-detect + manual override ----
+try:
+    import darkdetect
+    system_dark = darkdetect.isDark()
+except Exception:
+    system_dark = False  # fallback if library missing
+
+default_index = 1 if system_dark else 0
+theme_choice = st.sidebar.radio("🌓 Theme", ["Light", "Dark"], index=default_index)
+theme_template = "plotly_dark" if theme_choice == "Dark" else "plotly_white"
 
 # ---- Sidebar Inputs ----
 st.sidebar.header("General Settings")
@@ -176,7 +195,6 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "📈 Overview", "🟢 Years 1–10 (7% Regime)", "🔵 Post-Regime", "📊 Source Breakdown"
 ])
 
-# ---- Currency formatting helper ----
 def euro(x): return f"€{x:,.0f}"
 
 with tab1:
@@ -186,20 +204,24 @@ with tab1:
     c2.metric("Year 10 Net", euro(df.loc[years_in_7pct-1, 'Net_Income_Total_EUR']) if years_in_7pct > 0 else "—")
     c3.metric(f"Year {len(df)} Capital", euro(df.loc[len(df)-1, 'End_Capital_EUR']))
 
-    for title, coly in [("Net Income", "Net_Income_Total_EUR"), ("Capital", "End_Capital_EUR"), ("Tax", "Tax_Total_EUR")]:
-        st.markdown(f"### {title} (EUR)")
-        fig = px.line(
-            df, x="Year", y=coly,
-            title=f"{title} Over Time (€)",
-            labels={"value": "€", "Year": "Year"},
-            template="plotly_white",
-        )
-        fig.update_traces(line=dict(width=3))
-        fig.update_layout(
-            yaxis_tickprefix="€", yaxis_tickformat=",", showlegend=False,
-            title_font=dict(size=16), font=dict(size=12)
-        )
-        st.plotly_chart(fig, use_container_width=True)
+    st.markdown("### Income, Capital & Tax Over Time (€)")
+    fig = px.line(
+        df, x="Year", y=["Net_Income_Total_EUR", "End_Capital_EUR", "Tax_Total_EUR"],
+        labels={"value": "€", "variable": "Category"},
+        color_discrete_map={
+            "Net_Income_Total_EUR": "#00B050",  # green
+            "End_Capital_EUR": "#0070C0",       # blue
+            "Tax_Total_EUR": "#C00000"          # red
+        },
+        template=theme_template,
+    )
+    fig.update_traces(line=dict(width=3))
+    fig.update_layout(
+        yaxis_tickprefix="€", yaxis_tickformat=",",
+        legend_title_text="", title_font=dict(size=16),
+        font=dict(size=12)
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
     st.download_button("⬇️ Download Full CSV", df.to_csv(index=False).encode("utf-8"), "projection_full.csv")
 
