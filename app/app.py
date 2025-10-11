@@ -271,51 +271,114 @@ with tab4:
 # ---- Inputs Explained Tab ----
 with tab5:
     st.header("Understanding Each Input")
+
     st.markdown("""
     ### 💱 General Settings
-    - **FX (€ per £)** – Converts your UK income and savings to euros.
-    - **Inflation (%)** – Models price rises; higher inflation lowers future purchasing power.
+    **FX (€ per £)**  
+    This tells the model how many euros you get for one pound.  
+    For example, if £1 = €1.20, then a £30,000 pension becomes €36,000.  
+    A higher rate means your British income converts into more euros, boosting your total income.  
+    Try lowering it to see what happens if the pound weakens against the euro.
+
+    **Inflation (%)**  
+    Inflation measures how much prices rise over time.  
+    If inflation is 2%, things that cost €100 today will cost about €122 in ten years.  
+    The model adjusts all future figures to show both *nominal* (actual) and *real* (inflation-adjusted) values.  
+    Use this to understand how far your money really stretches over time.
+
+    ---
 
     ### 💰 Pensions (GBP)
-    - **Your Pension (£)** and **Wife's Pension (£)** – Annual pre-tax pension income converted into euros.
+    **Your Pension (£)** and **Wife’s Pension (£)**  
+    Enter your annual pensions in pounds.  
+    These are treated as foreign income in Italy (taxed at 7% during the 7% regime).  
+    The model automatically converts them to euros using your FX rate.  
+    Example: £30,000 each = €70,200 total at €1.17/£.
+
+    ---
 
     ### 💼 Capital (GBP)
-    - **Starting Investable Capital (£)** – Savings or inheritance used to generate investment income.
+    **Starting Investable Capital (£)**  
+    This is the total amount you’ll have to invest — from savings, inheritance, or property sales.  
+    The model spreads it across the investment types (cash, bonds, equities, property) according to your chosen percentages.  
+    Example: if you set £500,000 and allocate 40% to cash, then €234,000 (approx.) will be treated as savings.
+
+    ---
 
     ### ⏳ Horizon
-    - **Years in 7% Regime** – Duration of Italy’s flat 7% tax on foreign income.
-    - **Years Post-Regime** – Normal Italian tax applies beyond this period.
+    **Years in 7% Regime**  
+    Italy allows certain retirees to pay a flat 7% tax on all *foreign-source* income for up to ten years.  
+    Enter how many years you plan to qualify for that.  
+    During this period, your UK pensions and overseas investments are all taxed at just 7%.
+
+    **Years Post-Regime**  
+    After the 7% scheme ends, the model switches to Italy’s normal *IRPEF* tax rates plus regional and municipal surcharges.  
+    This helps you see what your income and capital might look like once the flat-tax period expires.
+
+    ---
 
     ### 🇮🇹 Italian Progressive (Post-Regime)
-    - **Regional Add-on** and **Municipal Add-on** – Local surcharges on IRPEF after the 7% regime ends.
+    **Regional Add-on** and **Municipal Add-on**  
+    These are small additional taxes set by local governments in Italy.  
+    They’re usually around 1–2% combined but can vary by region.  
+    They only apply after the 7% regime ends and can slightly reduce your net income.
+
+    ---
 
     ### 📊 Investment Strategies
-    - **Cash, Bonds, Equity, Property** – Define how your capital is invested.
-    - Adjust yields, fees, and growth rates to test different performance assumptions.
+    This section defines *how your capital is divided and how it performs each year.*
 
-    ### 🧾 Tips
-    - Keep allocations near 100%.
-    - Use higher growth for higher-risk assets.
-    - Experiment with inflation or FX to see long-term effects.
+    - **Cash** – Low risk and easy access. Produces modest interest but doesn’t grow much. Inflation can erode its value over time.  
+      Example: A 3% cash yield with 2% inflation gives only about 1% real growth.
+
+    - **Bonds** – Fixed-income investments (like government or corporate bonds). They pay steady interest but offer limited growth.  
+      Useful for stability in retirement.
+
+    - **Equity** – Shares or investment funds. These can fluctuate but often grow more over time.  
+      A 5% growth rate assumes moderate stock market returns.
+
+    - **Rental Property** – Generates regular income and potential capital appreciation.  
+      Example: 4% rental yield + 2% property growth = strong long-term returns.
+
+    **Foreign-source Rental** – Tick this if your rental property is *outside Italy* (so it stays under the 7% regime).  
+    Leave it unticked if the property is *in Italy*, where it’ll be taxed under IRPEF.
+
+    ---
+
+    ### 🧾 General Tips
+    - Keep total allocations near 100% so your capital is fully used.  
+    - Use higher growth for higher-risk investments (like equities or property).  
+    - Test “what-if” situations — for example, what if inflation doubles or the pound weakens?  
+    - Download the CSV results for a deeper look in Excel or Google Sheets.
+
+    ---
     """)
 
     with st.expander("📘 Learn More – Example Scenarios"):
         st.markdown("""
         #### 💨 Inflation Example
-        5% inflation halves your purchasing power in about 14 years.
-        Check 'real' columns in CSVs to see inflation-adjusted results.
+        If inflation rises to 5%, your €50,000 pension will only buy what €25,000 buys today after about 14 years.  
+        The model’s **real (inflation-adjusted)** columns show this effect clearly.
 
         #### 💶 Exchange Rate Example
-        A lower FX rate (e.g. €1.05/£) reduces your euro income. Try changing FX to visualise its impact.
+        Suppose the pound weakens from €1.17 to €1.05 — your £50,000 pension drops from €58,500 to €52,500.  
+        You can change the **FX rate** to instantly see how that affects your income.
 
         #### 📊 Allocation Example
-        More equities or property increase growth potential but also volatility.
+        A 60% equity allocation may boost long-term capital but could fluctuate year-to-year.  
+        Increasing **bonds** or **cash** lowers risk but reduces total returns.
 
         #### 🇮🇹 7% Regime Example
-        First 10 years taxed at flat 7% on foreign income, then switches automatically to IRPEF.
+        For the first 10 years in Italy, all foreign income (pensions, UK investments, overseas rentals) is taxed at a flat 7%.  
+        After that, standard progressive tax (IRPEF + surcharges) kicks in.  
+        The app automatically switches the tax calculation when that happens.
 
         #### 🏡 Rental Property Example
-        Tick 'foreign-source' if property is abroad to keep 7% benefit. Untick for Italian rentals taxed under IRPEF.
+        Keeping your rental in the UK? Tick “foreign-source” to apply the 7% flat tax.  
+        Buying a rental in Sicily? Leave it unticked — it’s treated as Italian income after the 7% regime ends.
         """)
 
-        st.info("💡 Tip: Change one input at a time to see its effect — e.g. raise inflation or lower FX — and watch the graphs adjust dynamically.")
+        st.info("""
+        💡 Tip: Experiment! Try increasing inflation to 4%, reducing FX to €1.05/£, or shifting more to equities.  
+        Watch the graphs to see how these choices affect your income, tax, and capital year by year.
+        """)
