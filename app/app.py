@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-
+import plotly.express as px  # Modern charts
 from modules.tax import (
     italian_irpef_2025, calc_irpef_tax, add_region_muni_surcharge,
     tax_at_irpef_with_surcharges, gbp_to_eur
@@ -9,14 +8,13 @@ from modules.tax import (
 from modules.finance import StrategyInputs, annual_investment_step, weighted_starting_capital
 from modules.utils import combine_series_to_df, add_real_terms
 
-
+# ---- Page Setup ----
 st.set_page_config(page_title="Retirement & 7% Regime Model", layout="wide")
 with open("app/assets/styles.css", "r", encoding="utf-8") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 st.title("Retirement & Investment Model — Italy 7% Regime → Post-10 Years")
 st.caption("Local model with editable assumptions and CSV export.")
-
 
 # ---- Sidebar Inputs ----
 st.sidebar.header("General Settings")
@@ -178,29 +176,41 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "📈 Overview", "🟢 Years 1–10 (7% Regime)", "🔵 Post-Regime", "📊 Source Breakdown"
 ])
 
+# ---- Currency formatting helper ----
+def euro(x): return f"€{x:,.0f}"
+
 with tab1:
     st.subheader("Key Totals (EUR)")
     c1, c2, c3 = st.columns(3)
-    c1.metric("Year 1 Net", f"{df.loc[0,'Net_Income_Total_EUR']:,.0f}")
-    c2.metric("Year 10 Net", f"{df.loc[years_in_7pct-1,'Net_Income_Total_EUR']:,.0f}" if years_in_7pct>0 else "—")
-    c3.metric(f"Year {len(df)} Capital", f"{df.loc[len(df)-1,'End_Capital_EUR']:,.0f}")
+    c1.metric("Year 1 Net", euro(df.loc[0, 'Net_Income_Total_EUR']))
+    c2.metric("Year 10 Net", euro(df.loc[years_in_7pct-1, 'Net_Income_Total_EUR']) if years_in_7pct > 0 else "—")
+    c3.metric(f"Year {len(df)} Capital", euro(df.loc[len(df)-1, 'End_Capital_EUR']))
 
     for title, coly in [("Net Income", "Net_Income_Total_EUR"), ("Capital", "End_Capital_EUR"), ("Tax", "Tax_Total_EUR")]:
         st.markdown(f"### {title} (EUR)")
-        fig, ax = plt.subplots()
-        ax.plot(df["Year"], df[coly])
-        ax.set_xlabel("Year"); ax.set_ylabel(title)
-        st.pyplot(fig)
+        fig = px.line(
+            df, x="Year", y=coly,
+            title=f"{title} Over Time (€)",
+            labels={"value": "€", "Year": "Year"},
+            template="plotly_white",
+        )
+        fig.update_traces(line=dict(width=3))
+        fig.update_layout(
+            yaxis_tickprefix="€", yaxis_tickformat=",", showlegend=False,
+            title_font=dict(size=16), font=dict(size=12)
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
     st.download_button("⬇️ Download Full CSV", df.to_csv(index=False).encode("utf-8"), "projection_full.csv")
 
 with tab2:
     st.subheader("7% Regime Period")
-    st.dataframe(df_7.round(2))
+    st.dataframe(df_7.style.format({c: "€{:,.0f}" for c in df_7.columns if c.endswith("_EUR")}))
     st.download_button("⬇️ Download 7% CSV", df_7.to_csv(index=False).encode("utf-8"), "projection_7pct.csv")
 
 with tab3:
     st.subheader("Post-Regime Period")
-    st.dataframe(df_post.round(2))
+    st.dataframe(df_post.style.format({c: "€{:,.0f}" for c in df_post.columns if c.endswith("_EUR")}))
     st.download_button("⬇️ Download Post CSV", df_post.to_csv(index=False).encode("utf-8"), "projection_post.csv")
 
 with tab4:
@@ -210,7 +220,7 @@ with tab4:
         "Tax_Pension_EUR", "Tax_Foreign_Invest_EUR", "Tax_Italian_Invest_EUR",
         "Tax_Total_EUR", "Net_Income_Total_EUR",
     ]
-    st.dataframe(df[cols].round(2))
+    st.dataframe(df[cols].style.format({c: "€{:,.0f}" for c in cols if c.endswith("_EUR")}))
     st.download_button("⬇️ Download Source Breakdown", df[cols].to_csv(index=False).encode("utf-8"), "projection_source_breakdown.csv")
 
 st.markdown(
