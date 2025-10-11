@@ -10,8 +10,86 @@ from modules.tax import (
 from modules.finance import StrategyInputs, annual_investment_step, weighted_starting_capital
 from modules.utils import combine_series_to_df, add_real_terms
 
+# ---- Plotly theme helper ----
+import plotly.io as pio
+
+def apply_plotly_theme():
+    """Apply unified blue/white theme to Plotly charts."""
+    pio.templates["pension_theme"] = pio.templates["plotly_white"]
+    pio.templates["pension_theme"].layout.font.family = "Lato, Segoe UI, Helvetica, sans-serif"
+    pio.templates["pension_theme"].layout.font.size = 14
+    pio.templates["pension_theme"].layout.font.color = "#004d80"  # blue for light mode
+    pio.templates["pension_theme"].layout.paper_bgcolor = "rgba(0,0,0,0)"
+    pio.templates["pension_theme"].layout.plot_bgcolor = "rgba(0,0,0,0)"
+    pio.templates["pension_theme"].layout.xaxis.gridcolor = "rgba(0,112,192,0.15)"
+    pio.templates["pension_theme"].layout.yaxis.gridcolor = "rgba(0,112,192,0.15)"
+    pio.templates["pension_theme"].layout.title.font.size = 18
+    pio.templates["pension_theme"].layout.title.font.color = "#004d80"
+    pio.templates["pension_theme"].layout.legend.font.color = "#004d80"
+
+    # Adjust for dark mode
+    import darkdetect
+    if darkdetect.isDark():
+        pio.templates["pension_theme"].layout.font.color = "#ffffff"
+        pio.templates["pension_theme"].layout.title.font.color = "#ffffff"
+        pio.templates["pension_theme"].layout.legend.font.color = "#ffffff"
+        pio.templates["pension_theme"].layout.xaxis.gridcolor = "rgba(255,255,255,0.2)"
+        pio.templates["pension_theme"].layout.yaxis.gridcolor = "rgba(255,255,255,0.2)"
+
+    pio.templates.default = "pension_theme"
+
+# ---- Matplotlib theme helper ----
+import matplotlib.pyplot as plt
+
+def apply_matplotlib_theme():
+    """Apply consistent blue/white theme to Matplotlib charts."""
+    import darkdetect
+    import matplotlib as mpl
+
+    # Base font and sizing
+    mpl.rcParams["font.family"] = "Lato"
+    mpl.rcParams["font.size"] = 12
+    mpl.rcParams["axes.titlesize"] = 14
+    mpl.rcParams["axes.labelsize"] = 12
+    mpl.rcParams["axes.titleweight"] = "600"
+    mpl.rcParams["axes.labelweight"] = "500"
+    mpl.rcParams["axes.edgecolor"] = "none"
+    mpl.rcParams["figure.facecolor"] = "none"
+    mpl.rcParams["axes.facecolor"] = "none"
+    mpl.rcParams["savefig.facecolor"] = "none"
+    mpl.rcParams["legend.frameon"] = False
+    mpl.rcParams["grid.linestyle"] = "-"
+    mpl.rcParams["grid.alpha"] = 0.2
+
+    if darkdetect.isDark():
+        # Dark mode colours
+        mpl.rcParams["text.color"] = "#ffffff"
+        mpl.rcParams["axes.labelcolor"] = "#ffffff"
+        mpl.rcParams["xtick.color"] = "#ffffff"
+        mpl.rcParams["ytick.color"] = "#ffffff"
+        mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=["#33adff"])
+        mpl.rcParams["grid.color"] = "#ffffff"
+    else:
+        # Light mode colours
+        mpl.rcParams["text.color"] = "#004d80"
+        mpl.rcParams["axes.labelcolor"] = "#004d80"
+        mpl.rcParams["xtick.color"] = "#004d80"
+        mpl.rcParams["ytick.color"] = "#004d80"
+        mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=["#0070C0"])
+        mpl.rcParams["grid.color"] = "#0070C0"
+
+# Apply both themes at startup
+apply_plotly_theme()
+apply_matplotlib_theme()
+
 # ---- Page Setup ----
 st.set_page_config(page_title="Retirement & 7% Regime Model", layout="wide")
+
+# ---- Load Google Font (Lato) before custom CSS ----
+st.markdown(
+    '<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;600&display=swap" rel="stylesheet">',
+    unsafe_allow_html=True
+)
 
 # ---- Load custom CSS safely regardless of where the app is launched ----
 css_path = os.path.join(os.path.dirname(__file__), "assets", "styles.css")

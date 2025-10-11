@@ -49,18 +49,33 @@ div.stTabs [role="tablist"] button {
   border-radius: 10px;
   padding: 0.6rem 1rem;
   font-weight: 500;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  color: #004d80;
+  transition: all 0.25s ease;
+  background-color: transparent !important;
+  color: rgba(255, 255, 255, 0.85) !important; /* light white text for inactive tabs */
 }
+
 div.stTabs [role="tablist"] button:hover {
-  background-color: rgba(0, 112, 192, 0.1);
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
 }
-div.stTabs [role="tablist"] button[data-baseweb="tab"]:not([aria-selected="true"]) {
-  background-color: transparent;
-}
+
 div.stTabs [role="tablist"] button[aria-selected="true"] {
-  background-color: #0070C0 !important;
-  color: white !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid #ffffff !important;
+  font-weight: 600;
+}
+
+/* --- Tabs in light mode --- */
+@media (prefers-color-scheme: light) {
+  div.stTabs [role="tablist"] button {
+    color: #004d80 !important;
+  }
+  div.stTabs [role="tablist"] button[aria-selected="true"] {
+    background-color: #0070C0 !important;
+    color: white !important;
+    border-bottom: none !important;
+  }
 }
 
 /* --- Tables --- */
@@ -123,14 +138,24 @@ div[data-baseweb="notification"] {
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3 {
-  color: #004d80;
+  color: #ffffff !important; /* white headers */
+  font-weight: 600;
 }
 
 [data-testid="stSidebar"] .stNumberInput label,
-[data-testid="stSidebar"] .stCheckbox label {
+[data-testid="stSidebar"] .stCheckbox label,
+[data-testid="stSidebar"] .stTextInput label,
+[data-testid="stSidebar"] .stSelectbox label,
+[data-testid="stSidebar"] .stSlider label,
+[data-testid="stSidebar"] .stRadio label {
   font-weight: 500;
-  color: #003d66;
+  color: #ffffff !important; /* make all labels white */
 }
+
+[data-testid="stSidebar"] label {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
 
 [data-testid="stSidebar"] .stNumberInput input {
   border-radius: 8px !important;
