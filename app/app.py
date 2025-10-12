@@ -342,15 +342,15 @@ def euro(x): return f"€{x:,.0f}"
 with tab1:
     st.subheader("Key Totals (EUR)")
 
-    # ---- Ensure inflation-adjusted columns exist BEFORE anything else ----
+    # ---- Compute real (inflation-adjusted) columns ----
+if "Year" in df.columns:
+    # Calculate deflator: value of €1 in today's money after n years of inflation
+    df["Inflation_Deflator"] = [(1 + inflation_pct / 100) ** (-y) for y in range(len(df))]
+
     for base_col in ["Net_Income_Total_EUR", "End_Capital_EUR", "Tax_Total_EUR"]:
         real_col = f"{base_col}_Real"
-        if real_col not in df.columns:
-            # Basic inflation deflator if not already present
-            if "Inflation_Adjustment" in df.columns:
-                df[real_col] = df[base_col] * df["Inflation_Adjustment"]
-            else:
-                df[real_col] = df[base_col]
+        df[real_col] = df[base_col] * df["Inflation_Deflator"]
+
 
     # ---- Inflation Toggle (shared for metrics + chart) ----
     show_real = st.checkbox(
