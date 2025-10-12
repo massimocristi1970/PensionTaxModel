@@ -342,22 +342,31 @@ def euro(x): return f"€{x:,.0f}"
 with tab1:
     st.subheader("Key Totals (EUR)")
 
-    # ---- Inflation Toggle ----
+    # ---- Ensure inflation-adjusted columns exist BEFORE anything else ----
+    for base_col in ["Net_Income_Total_EUR", "End_Capital_EUR", "Tax_Total_EUR"]:
+        real_col = f"{base_col}_Real"
+        if real_col not in df.columns:
+            # Basic inflation deflator if not already present
+            if "Inflation_Adjustment" in df.columns:
+                df[real_col] = df[base_col] * df["Inflation_Adjustment"]
+            else:
+                df[real_col] = df[base_col]
+
+    # ---- Inflation Toggle (shared for metrics + chart) ----
     show_real = st.checkbox(
         "Show inflation-adjusted (real) figures",
         value=False,
+        key="real_toggle_tab1",  # unique key to avoid duplicate ID error
         help="Tick to view results in 'today’s euros' adjusted for inflation."
     )
 
-    # Choose the appropriate column suffix
     suffix = "_Real" if show_real else ""
 
-    # Pick correct columns dynamically
+    # ---- Dynamic Metrics ----
     year1_col = f"Net_Income_Total_EUR{suffix}"
     year10_col = f"Net_Income_Total_EUR{suffix}"
     end_cap_col = f"End_Capital_EUR{suffix}"
 
-    # ---- Metrics ----
     c1, c2, c3 = st.columns(3)
     c1.metric("Year 1 Net", euro(df.loc[0, year1_col]))
     c2.metric(
@@ -365,25 +374,6 @@ with tab1:
         euro(df.loc[years_in_7pct - 1, year10_col]) if years_in_7pct > 0 else "—"
     )
     c3.metric(f"Year {len(df)} Capital", euro(df.loc[len(df) - 1, end_cap_col]))
-
-
-    # ---- Ensure inflation-adjusted columns exist ----
-    for base_col in ["Net_Income_Total_EUR", "End_Capital_EUR", "Tax_Total_EUR"]:
-        real_col = f"{base_col}_Real"
-        if real_col not in df.columns:
-            if "Inflation_Adjustment" not in df.columns:
-                # Basic inflation adjustment if not precomputed
-                df[real_col] = df[base_col]
-            else:
-                df[real_col] = df[base_col] * df["Inflation_Adjustment"]
-
-    
-    # ---- Inflation Toggle ----
-    show_real = st.checkbox(
-        "Show inflation-adjusted (real) figures",
-        value=False,
-        help="Tick to view results in 'today’s euros' adjusted for inflation."
-    )
 
     # ---- Choose which data columns to plot ----
     if show_real:
@@ -436,7 +426,6 @@ with tab1:
         df.to_csv(index=False).encode("utf-8"),
         "projection_full.csv"
     )
-
 
 with tab2:
     st.subheader("7% Regime Period")
