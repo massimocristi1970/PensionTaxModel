@@ -435,20 +435,25 @@ year10_index = years_in_7pct - 1 if years_in_7pct > 0 else len(df) - 1
 year10_nominal_income = df.loc[year10_index, "Net_Income_Total_EUR"]
 year10_real_income = df.loc[year10_index, "Net_Income_Total_EUR_Real"]
 
+# Total tax (sum over all years)
+total_nominal_tax = df["Tax_Total_EUR"].sum()
+total_real_tax = df["Tax_Total_EUR_Real"].sum()
+
 # Layout side by side
 colA, colB = st.columns(2)
 with colA:
     st.markdown("**Nominal (€)**")
-    st.write(f"Year 1 Net Income: {euro(year1_nominal_income)}")
-    st.write(f"Year 10 Net Income: {euro(year10_nominal_income)}")
-    st.write(f"Final Capital: {euro(final_nominal_cap)}")
+    st.write(f"💶 Year 1 Net Income: {euro(year1_nominal_income)}")
+    st.write(f"💶 Year 10 Net Income: {euro(year10_nominal_income)}")
+    st.write(f"🏦 Final Capital: {euro(final_nominal_cap)}")
+    st.write(f"💰 Total Tax Paid: {euro(total_nominal_tax)}")
 
 with colB:
     st.markdown("**Real (€ – Inflation-Adjusted)**")
-    st.write(f"Year 1 Net Income: {euro(year1_real_income)}")
-    st.write(f"Year 10 Net Income: {euro(year10_real_income)}")
-    st.write(f"Final Capital: {euro(final_real_cap)}")
-
+    st.write(f"💶 Year 1 Net Income: {euro(year1_real_income)}")
+    st.write(f"💶 Year 10 Net Income: {euro(year10_real_income)}")
+    st.write(f"🏦 Final Capital: {euro(final_real_cap)}")
+    st.write(f"💰 Total Tax Paid: {euro(total_real_tax)}")
 
     st.download_button(
         "⬇️ Download Full CSV",
