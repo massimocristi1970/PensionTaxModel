@@ -167,31 +167,67 @@ st.sidebar.caption("IRPEF brackets set in code; surcharges applied here.")
 st.sidebar.header("Strategies (sum ≈ 100%)")
 colA, colB = st.sidebar.columns(2)
 with colA:
-    alloc_cash = st.number_input("Cash Allocation %", 40.0, help="Percent of your capital held as cash or savings.")
-    yld_cash = st.number_input("Cash yield %", 3.5, help="Annual interest rate earned on cash savings.")
-    fee_cash = st.number_input("Cash fee %", 0.1, help="Bank or platform fees on your cash holdings.")
-    grow_cash = st.number_input("Cash growth %", 0.0, help="Long-term growth of cash (usually 0%).")
+    alloc_cash = st.number_input(
+        "Cash Allocation %", value=40.0, min_value=0.0, max_value=100.0, step=1.0, format="%.0f"
+    )
+    yld_cash = st.number_input(
+        "Cash yield %", value=3.5, min_value=0.0, max_value=20.0, step=0.1, format="%.1f"
+    )
+    fee_cash = st.number_input(
+        "Cash fee %", value=0.1, min_value=0.0, max_value=5.0, step=0.1, format="%.1f"
+    )
+    grow_cash = st.number_input(
+        "Cash growth %", value=0.0, min_value=-10.0, max_value=20.0, step=0.1, format="%.1f"
+    )
+
 with colB:
-    alloc_bond = st.number_input("Bonds Allocation %", 30.0, help="Percent of your capital invested in bonds.")
-    yld_bond = st.number_input("Bonds yield %", 3.8, help="Expected annual return from bond interest.")
-    fee_bond = st.number_input("Bonds fee %", 0.2, help="Management or platform fee for bond investments.")
-    grow_bond = st.number_input("Bonds growth %", 0.0, help="Capital growth of bonds beyond interest returns.")
+    alloc_bond = st.number_input(
+        "Bonds Allocation %", value=30.0, min_value=0.0, max_value=100.0, step=1.0, format="%.0f"
+    )
+    yld_bond = st.number_input(
+        "Bonds yield %", value=3.8, min_value=0.0, max_value=20.0, step=0.1, format="%.1f"
+    )
+    fee_bond = st.number_input(
+        "Bonds fee %", value=0.2, min_value=0.0, max_value=5.0, step=0.1, format="%.1f"
+    )
+    grow_bond = st.number_input(
+        "Bonds growth %", value=0.0, min_value=-10.0, max_value=20.0, step=0.1, format="%.1f"
+    )
 
 colC, colD = st.sidebar.columns(2)
 with colC:
-    alloc_equity = st.number_input("Equity Allocation %", 20.0, help="Percent of capital in stocks or shares.")
-    yld_equity = st.number_input("Equity yield %", 2.0, help="Dividend yield or income return from shares.")
-    fee_equity = st.number_input("Equity fee %", 0.4, help="Typical investment management fee for equities.")
-    grow_equity = st.number_input("Equity growth %", 5.0, help="Expected average annual price growth of equities.")
-with colD:
-    alloc_rental = st.number_input("Rental Allocation %", 10.0, help="Percent of capital invested in rental property.")
-    yld_rental = st.number_input("Rental net yield %", 4.0, help="Net annual income after property expenses.")
-    fee_rental = st.number_input("Rental maint. %", 0.5, help="Maintenance and management costs for rental property.")
-    grow_rental = st.number_input("Property growth %", 2.0, help="Expected annual capital appreciation of property.")
-    is_rental_foreign = st.checkbox(
-        "Treat rental as foreign-source (eligible for 7%)", value=False,
-        help="Tick this if your rental property is outside Italy (so it qualifies for the 7% tax rate)."
+    alloc_equity = st.number_input(
+        "Equity Allocation %", value=20.0, min_value=0.0, max_value=100.0, step=1.0, format="%.0f"
     )
+    yld_equity = st.number_input(
+        "Equity yield %", value=2.0, min_value=0.0, max_value=20.0, step=0.1, format="%.1f"
+    )
+    fee_equity = st.number_input(
+        "Equity fee %", value=0.4, min_value=0.0, max_value=5.0, step=0.1, format="%.1f"
+    )
+    grow_equity = st.number_input(
+        "Equity growth %", value=5.0, min_value=-10.0, max_value=20.0, step=0.1, format="%.1f"
+    )
+
+with colD:
+    alloc_rental = st.number_input(
+        "Rental Allocation %", value=10.0, min_value=0.0, max_value=100.0, step=1.0, format="%.0f"
+    )
+    yld_rental = st.number_input(
+        "Rental net yield %", value=4.0, min_value=0.0, max_value=20.0, step=0.1, format="%.1f"
+    )
+    fee_rental = st.number_input(
+        "Rental maint. %", value=0.5, min_value=0.0, max_value=5.0, step=0.1, format="%.1f"
+    )
+    grow_rental = st.number_input(
+        "Property growth %", value=2.0, min_value=-10.0, max_value=20.0, step=0.1, format="%.1f"
+    )
+    is_rental_foreign = st.checkbox(
+        "Treat rental as foreign-source (eligible for 7%)",
+        value=False,
+        help="If unchecked, rental is Italian-source and taxed with IRPEF even during 7% regime."
+    )
+
 
 # ---- Build strategy dict ----
 strategies = {
