@@ -346,6 +346,17 @@ with tab1:
     c2.metric("Year 10 Net", euro(df.loc[years_in_7pct - 1, 'Net_Income_Total_EUR']) if years_in_7pct > 0 else "—")
     c3.metric(f"Year {len(df)} Capital", euro(df.loc[len(df) - 1, 'End_Capital_EUR']))
 
+    # ---- Ensure inflation-adjusted columns exist ----
+    for base_col in ["Net_Income_Total_EUR", "End_Capital_EUR", "Tax_Total_EUR"]:
+        real_col = f"{base_col}_Real"
+        if real_col not in df.columns:
+            if "Inflation_Adjustment" not in df.columns:
+                # Basic inflation adjustment if not precomputed
+                df[real_col] = df[base_col]
+            else:
+                df[real_col] = df[base_col] * df["Inflation_Adjustment"]
+
+    
     # ---- Inflation Toggle ----
     show_real = st.checkbox(
         "Show inflation-adjusted (real) figures",
