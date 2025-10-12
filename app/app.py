@@ -341,10 +341,31 @@ def euro(x): return f"€{x:,.0f}"
 
 with tab1:
     st.subheader("Key Totals (EUR)")
+
+    # ---- Inflation Toggle ----
+    show_real = st.checkbox(
+        "Show inflation-adjusted (real) figures",
+        value=False,
+        help="Tick to view results in 'today’s euros' adjusted for inflation."
+    )
+
+    # Choose the appropriate column suffix
+    suffix = "_Real" if show_real else ""
+
+    # Pick correct columns dynamically
+    year1_col = f"Net_Income_Total_EUR{suffix}"
+    year10_col = f"Net_Income_Total_EUR{suffix}"
+    end_cap_col = f"End_Capital_EUR{suffix}"
+
+    # ---- Metrics ----
     c1, c2, c3 = st.columns(3)
-    c1.metric("Year 1 Net", euro(df.loc[0, 'Net_Income_Total_EUR']))
-    c2.metric("Year 10 Net", euro(df.loc[years_in_7pct - 1, 'Net_Income_Total_EUR']) if years_in_7pct > 0 else "—")
-    c3.metric(f"Year {len(df)} Capital", euro(df.loc[len(df) - 1, 'End_Capital_EUR']))
+    c1.metric("Year 1 Net", euro(df.loc[0, year1_col]))
+    c2.metric(
+        "Year 10 Net",
+        euro(df.loc[years_in_7pct - 1, year10_col]) if years_in_7pct > 0 else "—"
+    )
+    c3.metric(f"Year {len(df)} Capital", euro(df.loc[len(df) - 1, end_cap_col]))
+
 
     # ---- Ensure inflation-adjusted columns exist ----
     for base_col in ["Net_Income_Total_EUR", "End_Capital_EUR", "Tax_Total_EUR"]:
