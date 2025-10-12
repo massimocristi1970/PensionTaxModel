@@ -343,24 +343,63 @@ with tab1:
     st.subheader("Key Totals (EUR)")
     c1, c2, c3 = st.columns(3)
     c1.metric("Year 1 Net", euro(df.loc[0, 'Net_Income_Total_EUR']))
-    c2.metric("Year 10 Net", euro(df.loc[years_in_7pct-1, 'Net_Income_Total_EUR']) if years_in_7pct > 0 else "—")
-    c3.metric(f"Year {len(df)} Capital", euro(df.loc[len(df)-1, 'End_Capital_EUR']))
+    c2.metric("Year 10 Net", euro(df.loc[years_in_7pct - 1, 'Net_Income_Total_EUR']) if years_in_7pct > 0 else "—")
+    c3.metric(f"Year {len(df)} Capital", euro(df.loc[len(df) - 1, 'End_Capital_EUR']))
 
-    st.markdown("### Income, Capital & Tax Over Time (€)")
+    # ---- Inflation Toggle ----
+    show_real = st.checkbox(
+        "Show inflation-adjusted (real) figures",
+        value=False,
+        help="Tick to view results in 'today’s euros' adjusted for inflation."
+    )
+
+    # ---- Choose which data columns to plot ----
+    if show_real:
+        y_cols = [
+            "Net_Income_Total_EUR_Real",
+            "End_Capital_EUR_Real",
+            "Tax_Total_EUR_Real"
+        ]
+        title_suffix = " (Real, Inflation-Adjusted)"
+    else:
+        y_cols = [
+            "Net_Income_Total_EUR",
+            "End_Capital_EUR",
+            "Tax_Total_EUR"
+        ]
+        title_suffix = " (Nominal)"
+
+    # ---- Build the chart ----
+    st.markdown(f"### Income, Capital & Tax Over Time{title_suffix}")
     fig = px.line(
-        df, x="Year", y=["Net_Income_Total_EUR", "End_Capital_EUR", "Tax_Total_EUR"],
+        df,
+        x="Year",
+        y=y_cols,
         labels={"value": "€", "variable": "Category"},
         color_discrete_map={
             "Net_Income_Total_EUR": "#00B050",
+            "Net_Income_Total_EUR_Real": "#00B050",
             "End_Capital_EUR": "#0070C0",
-            "Tax_Total_EUR": "#C00000"
+            "End_Capital_EUR_Real": "#0070C0",
+            "Tax_Total_EUR": "#C00000",
+            "Tax_Total_EUR_Real": "#C00000",
         },
         template=theme_template,
     )
     fig.update_traces(line=dict(width=3))
-    fig.update_layout(yaxis_tickprefix="€", yaxis_tickformat=",", legend_title_text="")
+    fig.update_layout(
+        yaxis_tickprefix="€",
+        yaxis_tickformat=",",
+        legend_title_text="",
+        hovermode="x unified"
+    )
     st.plotly_chart(fig, use_container_width=True)
-    st.download_button("⬇️ Download Full CSV", df.to_csv(index=False).encode("utf-8"), "projection_full.csv")
+
+    st.download_button(
+        "⬇️ Download Full CSV",
+        df.to_csv(index=False).encode("utf-8"),
+        "projection_full.csv"
+    )
 
 with tab2:
     st.subheader("7% Regime Period")
