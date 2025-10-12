@@ -369,13 +369,17 @@ with tab1:
         ]
         title_suffix = " (Nominal)"
 
+    # ---- Convert to long-form for Plotly ----
+    df_long = df.melt(id_vars="Year", value_vars=y_cols, var_name="Category", value_name="Value")
+
     # ---- Build the chart ----
     st.markdown(f"### Income, Capital & Tax Over Time{title_suffix}")
     fig = px.line(
-        df,
+        df_long,
         x="Year",
-        y=y_cols,
-        labels={"value": "€", "variable": "Category"},
+        y="Value",
+        color="Category",
+        labels={"Value": "€", "Category": "Category"},
         color_discrete_map={
             "Net_Income_Total_EUR": "#00B050",
             "Net_Income_Total_EUR_Real": "#00B050",
@@ -400,6 +404,7 @@ with tab1:
         df.to_csv(index=False).encode("utf-8"),
         "projection_full.csv"
     )
+
 
 with tab2:
     st.subheader("7% Regime Period")
