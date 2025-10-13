@@ -11,9 +11,5 @@
       "src": "/(.*)",
       "dest": "app/app.py"
     }
-  ],
-  "includeFiles": [
-    "app/assets/**",
-    "app/modules/**"
   ]
 }
