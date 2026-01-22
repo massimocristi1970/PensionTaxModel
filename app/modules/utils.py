@@ -14,5 +14,5 @@ def add_real_terms(df: pd.DataFrame, cols: List[str], inflation_pct: float) -> p
     infl = (1 + inflation_pct / 100.0)
     df["Inflation_Index"] = [infl ** i for i in range(len(df))]
     for c in cols:
-        df[f"{c}_real"] = df[c] / df["Inflation_Index"]
+        df[f"{c}_Real"] = df[c] / df["Inflation_Index"]
     return df
