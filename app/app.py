@@ -97,9 +97,9 @@ if os.path.exists(css_path):
     with open(css_path, "r", encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 else:
-    st.warning("⚠️ styles.css not found in app/assets/. Using default Streamlit style.")
+    st.warning("styles.css not found in app/assets/. Using default Streamlit style.")
 
-st.title("Retirement & Investment Model — Italy ")
+st.title("Retirement & Investment Model - Italy")
 st.caption("Local model with editable assumptions and CSV export.")
 
 # ---- Theme: auto-detect + manual override ----
@@ -110,13 +110,13 @@ except Exception:
     system_dark = False
 
 default_index = 1 if system_dark else 0
-theme_choice = st.sidebar.radio("🌓 Theme", ["Light", "Dark"], index=default_index)
+theme_choice = st.sidebar.radio("Theme", ["Light", "Dark"], index=default_index)
 theme_template = "plotly_dark" if theme_choice == "Dark" else "plotly_white"
 
 # ---- Sidebar Inputs ----
 st.sidebar.header("General Settings")
 fx = st.sidebar.number_input(
-    "FX: € per £",
+    "FX: EUR per GBP",
     value=1.17, min_value=0.5, max_value=2.0, step=0.01,
     help="This sets the exchange rate used to convert your pensions and capital from pounds to euros."
 )
@@ -128,24 +128,24 @@ inflation_pct = st.sidebar.number_input(
 
 st.sidebar.header("Pensions (GBP)")
 you_pension_gbp = st.sidebar.number_input(
-    "Your annual pension (£)", value=30000, step=1000,
+    "Your annual pension (GBP)", value=30000, step=1000,
     help="Enter your annual pension income in pounds. This will be converted to euros using the FX rate."
 )
 wife_pension_gbp = st.sidebar.number_input(
-    "Wife's annual pension (£)", value=20000, step=1000,
-    help="Enter your spouse’s annual pension income in pounds. This is also converted to euros using the FX rate."
+    "Wife's annual pension (GBP)", value=20000, step=1000,
+    help="Enter your spouse's annual pension income in pounds. This is also converted to euros using the FX rate."
 )
 
 st.sidebar.header("Capital (GBP)")
 starting_capital_gbp = st.sidebar.number_input(
-    "Starting investable capital (£)", value=500000, step=10000,
+    "Starting investable capital (GBP)", value=500000, step=10000,
     help="Total savings or inheritance you expect to invest at the start of retirement."
 )
 
 st.sidebar.header("Horizon")
 years_in_7pct = st.sidebar.number_input(
     "Years in 7% regime", value=10, min_value=1, max_value=10,
-    help="Number of years you plan to qualify for Italy’s 7% flat-tax regime on foreign income."
+    help="Number of years you plan to qualify for Italy's 7% flat-tax regime on foreign income."
 )
 years_post = st.sidebar.number_input(
     "Years post-regime", value=10, min_value=1, max_value=40,
@@ -164,7 +164,7 @@ municipal_surcharge = st.sidebar.number_input(
 st.sidebar.caption("IRPEF brackets set in code; surcharges applied here.")
 
 # ---- Investment strategies ----
-st.sidebar.header("Strategies (sum ≈ 100%)")
+st.sidebar.header("Strategies (sum = 100%)")
 colA, colB = st.sidebar.columns(2)
 with colA:
     alloc_cash = st.number_input(
@@ -334,30 +334,29 @@ df_post = df.iloc[years_in_7pct:, :].copy() if years_post > 0 else pd.DataFrame(
 
 # ---- Tabs ----
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📈 Overview", "🟢 Years 1–10 (7% Regime)", "🔵 Post-Regime", "📊 Source Breakdown", "ℹ️ Inputs Explained"
+    "Overview", "Years 1-10 (7% Regime)", "Post-Regime", "Source Breakdown", "Inputs Explained"
 ])
 
-def euro(x): return f"€{x:,.0f}"
+def euro(x): return f"EUR {x:,.0f}"
 
 with tab1:
     st.subheader("Key Totals (EUR)")
 
     # ---- Compute real (inflation-adjusted) columns ----
-if "Year" in df.columns:
-    # Calculate deflator: value of €1 in today's money after n years of inflation
-    df["Inflation_Deflator"] = [(1 + inflation_pct / 100) ** (-y) for y in range(len(df))]
+    if "Year" in df.columns:
+        # Calculate deflator: value of 1 EUR in today's money after n years of inflation
+        df["Inflation_Deflator"] = [(1 + inflation_pct / 100) ** (-y) for y in range(len(df))]
 
-    for base_col in ["Net_Income_Total_EUR", "End_Capital_EUR", "Tax_Total_EUR"]:
-        real_col = f"{base_col}_Real"
-        df[real_col] = df[base_col] * df["Inflation_Deflator"]
-
+        for base_col in ["Net_Income_Total_EUR", "End_Capital_EUR", "Tax_Total_EUR"]:
+            real_col = f"{base_col}_Real"
+            df[real_col] = df[base_col] * df["Inflation_Deflator"]
 
     # ---- Inflation Toggle (shared for metrics + chart) ----
     show_real = st.checkbox(
         "Show inflation-adjusted (real) figures",
         value=False,
         key="real_toggle_tab1",  # unique key to avoid duplicate ID error
-        help="Tick to view results in 'today’s euros' adjusted for inflation."
+        help="Tick to view results in 'today's euros' adjusted for inflation."
     )
 
     suffix = "_Real" if show_real else ""
@@ -371,7 +370,7 @@ if "Year" in df.columns:
     c1.metric("Year 1 Net", euro(df.loc[0, year1_col]))
     c2.metric(
         "Year 10 Net",
-        euro(df.loc[years_in_7pct - 1, year10_col]) if years_in_7pct > 0 else "—"
+        euro(df.loc[years_in_7pct - 1, year10_col]) if years_in_7pct > 0 else "---"
     )
     c3.metric(f"Year {len(df)} Capital", euro(df.loc[len(df) - 1, end_cap_col]))
 
@@ -401,7 +400,7 @@ if "Year" in df.columns:
         x="Year",
         y="Value",
         color="Category",
-        labels={"Value": "€", "Category": "Category"},
+        labels={"Value": "EUR", "Category": "Category"},
         color_discrete_map={
             "Net_Income_Total_EUR": "#00B050",
             "Net_Income_Total_EUR_Real": "#00B050",
@@ -414,7 +413,7 @@ if "Year" in df.columns:
     )
     fig.update_traces(line=dict(width=3))
     fig.update_layout(
-        yaxis_tickprefix="€",
+        yaxis_tickprefix="EUR ",
         yaxis_tickformat=",",
         legend_title_text="",
         hovermode="x unified"
@@ -422,54 +421,54 @@ if "Year" in df.columns:
     st.plotly_chart(fig, use_container_width=True)
 
     # ---- Comparison Summary ----
-st.markdown("### 💡 Nominal vs Real Comparison Summary")
+    st.markdown("### Nominal vs Real Comparison Summary")
 
-# Compute key figures
-final_nominal_cap = df.loc[len(df) - 1, "End_Capital_EUR"]
-final_real_cap = df.loc[len(df) - 1, "End_Capital_EUR_Real"]
+    # Compute key figures
+    final_nominal_cap = df.loc[len(df) - 1, "End_Capital_EUR"]
+    final_real_cap = df.loc[len(df) - 1, "End_Capital_EUR_Real"]
 
-year1_nominal_income = df.loc[0, "Net_Income_Total_EUR"]
-year1_real_income = df.loc[0, "Net_Income_Total_EUR_Real"]
+    year1_nominal_income = df.loc[0, "Net_Income_Total_EUR"]
+    year1_real_income = df.loc[0, "Net_Income_Total_EUR_Real"]
 
-year10_index = years_in_7pct - 1 if years_in_7pct > 0 else len(df) - 1
-year10_nominal_income = df.loc[year10_index, "Net_Income_Total_EUR"]
-year10_real_income = df.loc[year10_index, "Net_Income_Total_EUR_Real"]
+    year10_index = years_in_7pct - 1 if years_in_7pct > 0 else len(df) - 1
+    year10_nominal_income = df.loc[year10_index, "Net_Income_Total_EUR"]
+    year10_real_income = df.loc[year10_index, "Net_Income_Total_EUR_Real"]
 
-# Total tax (sum over all years)
-total_nominal_tax = df["Tax_Total_EUR"].sum()
-total_real_tax = df["Tax_Total_EUR_Real"].sum()
+    # Total tax (sum over all years)
+    total_nominal_tax = df["Tax_Total_EUR"].sum()
+    total_real_tax = df["Tax_Total_EUR_Real"].sum()
 
-# Layout side by side
-colA, colB = st.columns(2)
-with colA:
-    st.markdown("**Nominal (€)**")
-    st.write(f"💶 Year 1 Net Income: {euro(year1_nominal_income)}")
-    st.write(f"💶 Year 10 Net Income: {euro(year10_nominal_income)}")
-    st.write(f"🏦 Final Capital: {euro(final_nominal_cap)}")
-    st.write(f"💰 Total Tax Paid: {euro(total_nominal_tax)}")
+    # Layout side by side
+    colA, colB = st.columns(2)
+    with colA:
+        st.markdown("**Nominal (EUR)**")
+        st.write(f"Year 1 Net Income: {euro(year1_nominal_income)}")
+        st.write(f"Year 10 Net Income: {euro(year10_nominal_income)}")
+        st.write(f"Final Capital: {euro(final_nominal_cap)}")
+        st.write(f"Total Tax Paid: {euro(total_nominal_tax)}")
 
-with colB:
-    st.markdown("**Real (€ – Inflation-Adjusted)**")
-    st.write(f"💶 Year 1 Net Income: {euro(year1_real_income)}")
-    st.write(f"💶 Year 10 Net Income: {euro(year10_real_income)}")
-    st.write(f"🏦 Final Capital: {euro(final_real_cap)}")
-    st.write(f"💰 Total Tax Paid: {euro(total_real_tax)}")
+    with colB:
+        st.markdown("**Real (EUR - Inflation-Adjusted)**")
+        st.write(f"Year 1 Net Income: {euro(year1_real_income)}")
+        st.write(f"Year 10 Net Income: {euro(year10_real_income)}")
+        st.write(f"Final Capital: {euro(final_real_cap)}")
+        st.write(f"Total Tax Paid: {euro(total_real_tax)}")
 
     st.download_button(
-        "⬇️ Download Full CSV",
+        "Download Full CSV",
         df.to_csv(index=False).encode("utf-8"),
         "projection_full.csv"
     )
 
 with tab2:
     st.subheader("7% Regime Period")
-    st.dataframe(df_7.style.format({c: "€{:,.0f}" for c in df_7.columns if c.endswith("_EUR")}))
-    st.download_button("⬇️ Download 7% CSV", df_7.to_csv(index=False).encode("utf-8"), "projection_7pct.csv")
+    st.dataframe(df_7.style.format({c: "EUR {:,.0f}" for c in df_7.columns if c.endswith("_EUR")}))
+    st.download_button("Download 7% CSV", df_7.to_csv(index=False).encode("utf-8"), "projection_7pct.csv")
 
 with tab3:
     st.subheader("Post-Regime Period")
-    st.dataframe(df_post.style.format({c: "€{:,.0f}" for c in df_post.columns if c.endswith("_EUR")}))
-    st.download_button("⬇️ Download Post CSV", df_post.to_csv(index=False).encode("utf-8"), "projection_post.csv")
+    st.dataframe(df_post.style.format({c: "EUR {:,.0f}" for c in df_post.columns if c.endswith("_EUR")}))
+    st.download_button("Download Post CSV", df_post.to_csv(index=False).encode("utf-8"), "projection_post.csv")
 
 with tab4:
     st.subheader("Income & Tax by Source Type")
@@ -478,120 +477,120 @@ with tab4:
         "Tax_Pension_EUR", "Tax_Foreign_Invest_EUR", "Tax_Italian_Invest_EUR",
         "Tax_Total_EUR", "Net_Income_Total_EUR",
     ]
-    st.dataframe(df[cols].style.format({c: "€{:,.0f}" for c in cols if c.endswith("_EUR")}))
-    st.download_button("⬇️ Download Source Breakdown", df[cols].to_csv(index=False).encode("utf-8"), "projection_source_breakdown.csv")
+    st.dataframe(df[cols].style.format({c: "EUR {:,.0f}" for c in cols if c.endswith("_EUR")}))
+    st.download_button("Download Source Breakdown", df[cols].to_csv(index=False).encode("utf-8"), "projection_source_breakdown.csv")
 
 # ---- Inputs Explained Tab ----
 with tab5:
     st.header("Understanding Each Input")
 
     st.markdown("""
-    ### 💱 General Settings
-    **FX (€ per £)**  
+    ### General Settings
+    **FX (EUR per GBP)**  
     This tells the model how many euros you get for one pound.  
-    For example, if £1 = €1.20, then a £30,000 pension becomes €36,000.  
+    For example, if 1 GBP = 1.20 EUR, then a 30,000 GBP pension becomes 36,000 EUR.  
     A higher rate means your British income converts into more euros, boosting your total income.  
     Try lowering it to see what happens if the pound weakens against the euro.
 
     **Inflation (%)**  
     Inflation measures how much prices rise over time.  
-    If inflation is 2%, things that cost €100 today will cost about €122 in ten years.  
+    If inflation is 2%, things that cost 100 EUR today will cost about 122 EUR in ten years.  
     The model adjusts all future figures to show both *nominal* (actual) and *real* (inflation-adjusted) values.  
     Use this to understand how far your money really stretches over time.
 
     ---
 
-    ### 💰 Pensions (GBP)
-    **Your Pension (£)** and **Wife’s Pension (£)**  
+    ### Pensions (GBP)
+    **Your Pension (GBP)** and **Wife's Pension (GBP)**  
     Enter your annual pensions in pounds.  
     These are treated as foreign income in Italy (taxed at 7% during the 7% regime).  
     The model automatically converts them to euros using your FX rate.  
-    Example: £30,000 each = €70,200 total at €1.17/£.
+    Example: 30,000 GBP each = 70,200 EUR total at 1.17 EUR/GBP.
 
     ---
 
-    ### 💼 Capital (GBP)
-    **Starting Investable Capital (£)**  
-    This is the total amount you’ll have to invest — from savings, inheritance, or property sales.  
+    ### Capital (GBP)
+    **Starting Investable Capital (GBP)**  
+    This is the total amount you'll have to invest - from savings, inheritance, or property sales.  
     The model spreads it across the investment types (cash, bonds, equities, property) according to your chosen percentages.  
-    Example: if you set £500,000 and allocate 40% to cash, then €234,000 (approx.) will be treated as savings.
+    Example: if you set 500,000 GBP and allocate 40% to cash, then 234,000 EUR (approx.) will be treated as savings.
 
     ---
 
-    ### ⏳ Horizon
+    ### Horizon
     **Years in 7% Regime**  
     Italy allows certain retirees to pay a flat 7% tax on all *foreign-source* income for up to ten years.  
     Enter how many years you plan to qualify for that.  
     During this period, your UK pensions and overseas investments are all taxed at just 7%.
 
     **Years Post-Regime**  
-    After the 7% scheme ends, the model switches to Italy’s normal *IRPEF* tax rates plus regional and municipal surcharges.  
+    After the 7% scheme ends, the model switches to Italy's normal *IRPEF* tax rates plus regional and municipal surcharges.  
     This helps you see what your income and capital might look like once the flat-tax period expires.
 
     ---
 
-    ### 🇮🇹 Italian Progressive (Post-Regime)
+    ### Italian Progressive (Post-Regime)
     **Regional Add-on** and **Municipal Add-on**  
     These are small additional taxes set by local governments in Italy.  
-    They’re usually around 1–2% combined but can vary by region.  
+    They're usually around 1-2% combined but can vary by region.  
     They only apply after the 7% regime ends and can slightly reduce your net income.
 
     ---
 
-    ### 📊 Investment Strategies
+    ### Investment Strategies
     This section defines *how your capital is divided and how it performs each year.*
 
-    - **Cash** – Low risk and easy access. Produces modest interest but doesn’t grow much. Inflation can erode its value over time.  
+    - **Cash** - Low risk and easy access. Produces modest interest but doesn't grow much. Inflation can erode its value over time.  
       Example: A 3% cash yield with 2% inflation gives only about 1% real growth.
 
-    - **Bonds** – Fixed-income investments (like government or corporate bonds). They pay steady interest but offer limited growth.  
+    - **Bonds** - Fixed-income investments (like government or corporate bonds). They pay steady interest but offer limited growth.  
       Useful for stability in retirement.
 
-    - **Equity** – Shares or investment funds. These can fluctuate but often grow more over time.  
+    - **Equity** - Shares or investment funds. These can fluctuate but often grow more over time.  
       A 5% growth rate assumes moderate stock market returns.
 
-    - **Rental Property** – Generates regular income and potential capital appreciation.  
+    - **Rental Property** - Generates regular income and potential capital appreciation.  
       Example: 4% rental yield + 2% property growth = strong long-term returns.
 
-    **Foreign-source Rental** – Tick this if your rental property is *outside Italy* (so it stays under the 7% regime).  
-    Leave it unticked if the property is *in Italy*, where it’ll be taxed under IRPEF.
+    **Foreign-source Rental** - Tick this if your rental property is *outside Italy* (so it stays under the 7% regime).  
+    Leave it unticked if the property is *in Italy*, where it'll be taxed under IRPEF.
 
     ---
 
-    ### 🧾 General Tips
+    ### General Tips
     - Keep total allocations near 100% so your capital is fully used.  
     - Use higher growth for higher-risk investments (like equities or property).  
-    - Test “what-if” situations — for example, what if inflation doubles or the pound weakens?  
+    - Test "what-if" situations - for example, what if inflation doubles or the pound weakens?  
     - Download the CSV results for a deeper look in Excel or Google Sheets.
 
     ---
     """)
 
-    with st.expander("📘 Learn More – Example Scenarios"):
+    with st.expander("Learn More - Example Scenarios"):
         st.markdown("""
-        #### 💨 Inflation Example
-        If inflation rises to 5%, your €50,000 pension will only buy what €25,000 buys today after about 14 years.  
-        The model’s **real (inflation-adjusted)** columns show this effect clearly.
+        #### Inflation Example
+        If inflation rises to 5%, your 50,000 EUR pension will only buy what 25,000 EUR buys today after about 14 years.  
+        The model's **real (inflation-adjusted)** columns show this effect clearly.
 
-        #### 💶 Exchange Rate Example
-        Suppose the pound weakens from €1.17 to €1.05 — your £50,000 pension drops from €58,500 to €52,500.  
+        #### Exchange Rate Example
+        Suppose the pound weakens from 1.17 EUR to 1.05 EUR - your 50,000 GBP pension drops from 58,500 EUR to 52,500 EUR.  
         You can change the **FX rate** to instantly see how that affects your income.
 
-        #### 📊 Allocation Example
+        #### Allocation Example
         A 60% equity allocation may boost long-term capital but could fluctuate year-to-year.  
         Increasing **bonds** or **cash** lowers risk but reduces total returns.
 
-        #### 🇮🇹 7% Regime Example
+        #### 7% Regime Example
         For the first 10 years in Italy, all foreign income (pensions, UK investments, overseas rentals) is taxed at a flat 7%.  
         After that, standard progressive tax (IRPEF + surcharges) kicks in.  
         The app automatically switches the tax calculation when that happens.
 
-        #### 🏡 Rental Property Example
-        Keeping your rental in the UK? Tick “foreign-source” to apply the 7% flat tax.  
-        Buying a rental in Sicily? Leave it unticked — it’s treated as Italian income after the 7% regime ends.
+        #### Rental Property Example
+        Keeping your rental in the UK? Tick "foreign-source" to apply the 7% flat tax.  
+        Buying a rental in Sicily? Leave it unticked - it's treated as Italian income after the 7% regime ends.
         """)
 
         st.info("""
-        💡 Tip: Experiment! Try increasing inflation to 4%, reducing FX to €1.05/£, or shifting more to equities.  
+        Tip: Experiment! Try increasing inflation to 4%, reducing FX to 1.05 EUR/GBP, or shifting more to equities.  
         Watch the graphs to see how these choices affect your income, tax, and capital year by year.
         """)
