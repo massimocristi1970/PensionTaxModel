@@ -2,3 +2,7 @@
 # Python virtual environment
 .venv/
 
+# ---- IDEs ----
+.idea/
+.vscode/
+
